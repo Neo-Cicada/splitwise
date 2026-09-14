@@ -5,11 +5,25 @@ Expense-splitting app. Spring Boot 3, Java 21, Postgres, Thymeleaf.
 ## Setup
 
 ```bash
-# 1. Start Postgres (database splitwise, user/password splitwise, port 5432)
+# 1. Start Postgres (database splitwise, user/password splitwise)
 docker compose up -d
 
 # 2. Run the application
 ./mvnw spring-boot:run
+```
+
+Postgres is published on **host port 5433**, not 5432. A locally installed
+Postgres (Homebrew, Postgres.app) binds `127.0.0.1:5432` specifically, and a
+loopback-specific bind wins over Docker's `0.0.0.0:5432` — the container would
+be published but every `localhost:5432` connection would still reach the local
+server instead. 5433 sidesteps that with no need to stop anything.
+
+If 5432 is free on your machine and you would rather use it, set the port once
+and both the container and the app follow:
+
+```bash
+SPLITWISE_DB_PORT=5432 docker compose up -d
+SPLITWISE_DB_PORT=5432 ./mvnw spring-boot:run
 ```
 
 Then open http://localhost:8080.

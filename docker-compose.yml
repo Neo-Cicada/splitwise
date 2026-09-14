@@ -8,7 +8,11 @@ services:
       POSTGRES_USER: splitwise
       POSTGRES_PASSWORD: splitwise
     ports:
-      - "5432:5432"
+      # Host 5433, not 5432: a locally installed Postgres (Homebrew, Postgres.app)
+      # binds 127.0.0.1:5432 specifically, and a loopback-specific bind beats
+      # Docker's 0.0.0.0 one — so the container would be published but
+      # unreachable. Override with SPLITWISE_DB_PORT if 5432 is free for you.
+      - "${SPLITWISE_DB_PORT:-5433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:

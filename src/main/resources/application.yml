@@ -3,7 +3,7 @@ spring:
     name: splitwise
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/splitwise
+    url: jdbc:postgresql://localhost:${SPLITWISE_DB_PORT:5433}/splitwise
     username: splitwise
     password: splitwise
     driver-class-name: org.postgresql.Driver
