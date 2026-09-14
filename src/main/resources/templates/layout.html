@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title layout:title-pattern="$CONTENT_TITLE · $LAYOUT_TITLE">Splitwise</title>
+
+    <!-- Pico.css v2, classless base styling. CDN only: no build step, no npm. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+
+    <!-- htmx: the server still renders every byte of HTML; htmx only swaps it in. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/2.0.7/htmx.min.js"
+            integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ"
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+
+<header class="container">
+    <nav>
+        <ul>
+            <li><a th:href="@{/}" class="brand"><strong>₱ Splitwise</strong></a></li>
+        </ul>
+        <ul>
+            <li><a th:href="@{/}">Home</a></li>
+            <li sec:authorize="isAuthenticated()"><a th:href="@{/groups}">Groups</a></li>
+
+            <li sec:authorize="isAuthenticated()" class="who">
+                <small>Signed in as <strong sec:authentication="principal.displayName">Name</strong></small>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post" class="logout-form">
+                    <button type="submit" class="secondary outline logout-button">Sign out</button>
+                </form>
+            </li>
+
+            <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Sign in</a></li>
+            <li sec:authorize="isAnonymous()"><a th:href="@{/register}">Register</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="container">
+    <!-- Flash messages render above every page's content. -->
+    <div th:replace="~{fragments/alerts :: alerts}"></div>
+
+    <section layout:fragment="content">
+        <p>This placeholder is replaced by each page's content block.</p>
+    </section>
+</main>
+
+<footer class="container">
+    <small>Splitwise &middot; <span th:text="${T(java.time.Year).now()}">2026</span></small>
+</footer>
+
+
+<!--
+  CSRF stays on for htmx requests. Spring Security expects the token in a
+  header for non-form posts; th:inline handles the escaping so the values
+  never break out of the string.
+-->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    (function () {
+        var header = /*[[${_csrf != null ? _csrf.headerName : ''}]]*/ '';
+        var token = /*[[${_csrf != null ? _csrf.token : ''}]]*/ '';
+        if (!header) return;
+        document.body.addEventListener('htmx:configRequest', function (event) {
+            event.detail.headers[header] = token;
+        });
+    })();
+    /*]]>*/
+</script>
+
+</body>
+</html>

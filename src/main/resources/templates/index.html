@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Home</title>
+</head>
+<body>
+
+<section layout:fragment="content">
+
+    <hgroup>
+        <h1 th:text="${greeting}">Welcome</h1>
+        <p>View layer only for now — groups, expenses and settlements come next.</p>
+    </hgroup>
+
+    <article>
+        <header>Money fragment</header>
+        <p>
+            A sample amount rendered through the shared fragment:
+            <span th:replace="~{fragments/money :: money(${sampleAmount})}">₱0.00</span>
+        </p>
+        <p>
+            A null amount falls back to a dash:
+            <span th:replace="~{fragments/money :: money(${null})}">—</span>
+        </p>
+    </article>
+
+    <article>
+        <header>Flash messages</header>
+        <p>Posting this form redirects back here with a flash attribute set.</p>
+        <form th:action="@{/demo/flash}" method="post">
+            <button type="submit">Trigger a success message</button>
+        </form>
+    </article>
+
+</section>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Timestamps are stored as TIMESTAMPTZ and come back from the driver in UTC,
+  so formatting them as-is shows the wrong calendar day for anyone east of
+  Greenwich. Always render through this fragment:
+
+      <span th:replace="~{fragments/datetime :: date(${group.createdAt})}"></span>
+-->
+<span th:fragment="date(value)" class="date"
+      th:with="zoned=${value != null} ? ${value.atZoneSameInstant(T(java.time.ZoneId).systemDefault())} : null"
+      th:text="${zoned != null} ? ${#temporals.format(zoned, 'd MMM yyyy')} : '—'">1 Jan 2026</span>
+
+<!--
+  For a plain LocalDate (expenses.spent_at) there is no instant and no zone to
+  convert — formatting it directly is already correct. Passing one to date()
+  above would fail, since LocalDate has no atZoneSameInstant.
+-->
+<span th:fragment="day(value)" class="date"
+      th:text="${value != null} ? ${#temporals.format(value, 'd MMM yyyy')} : '—'">1 Jan 2026</span>
+
+</body>
+</html>

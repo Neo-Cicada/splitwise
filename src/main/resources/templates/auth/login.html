@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Sign in</title>
+</head>
+<body>
+
+<section layout:fragment="content" class="narrow">
+
+    <hgroup>
+        <h1>Sign in</h1>
+        <p>Welcome back.</p>
+    </hgroup>
+
+    <article th:if="${loginError}" class="alert alert-error" role="alert">
+        <span th:text="${loginError}">Bad credentials</span>
+    </article>
+    <article th:if="${loginNotice}" class="alert alert-success" role="status">
+        <span th:text="${loginNotice}">Signed out</span>
+    </article>
+
+    <!-- Thymeleaf adds the CSRF hidden field to any th:action form. -->
+    <form th:action="@{/login}" method="post">
+        <label for="username">Email
+            <input type="email" id="username" name="username"
+                   autocomplete="username" required autofocus placeholder="you@example.com">
+        </label>
+
+        <label for="password">Password
+            <input type="password" id="password" name="password"
+                   autocomplete="current-password" required>
+        </label>
+
+        <button type="submit">Sign in</button>
+    </form>
+
+    <p><small>No account yet? <a th:href="@{/register}">Create one</a>.</small></p>
+
+</section>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Rendered by POST /groups/{id}/expenses/preview and swapped into
+  #split-preview by htmx. The amounts come from the same SplitStrategy beans
+  the real submission uses, so what is shown here is what gets stored.
+-->
+<th:block th:fragment="preview">
+
+    <div id="split-preview" class="split-preview">
+
+        <p th:if="${preview == null}" class="preview-hint">
+            <small>Fill in the amount and pick participants to see how it splits.</small>
+        </p>
+
+        <div th:if="${preview != null}">
+
+            <p th:if="${preview.hasProblem()}" class="preview-hint">
+                <small th:text="${preview.problem}">Enter an amount.</small>
+            </p>
+
+            <div th:unless="${preview.hasProblem()}">
+
+                <p class="preview-status"
+                   th:classappend="${preview.balanced} ? 'is-balanced' : 'is-unbalanced'">
+                    <span th:text="${preview.status}">Fully assigned.</span>
+                </p>
+
+                <table class="preview-table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Person</th>
+                        <th scope="col" th:if="${preview.type.name() == 'PERCENTAGE'}" class="numeric">Percent</th>
+                        <th scope="col" class="numeric">Share</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row : ${preview.rows}">
+                        <td th:text="${row.name}">Name</td>
+                        <td th:if="${preview.type.name() == 'PERCENTAGE'}" class="numeric">
+                            <span th:text="${row.value != null} ? ${row.value} + '%' : '—'">0%</span>
+                        </td>
+                        <!--
+                          th:if and th:replace must not share an element:
+                          Thymeleaf resolves the replacement first, so the
+                          condition would never be applied and both branches
+                          would render.
+                        -->
+                        <td class="numeric">
+                            <th:block th:if="${row.amount != null}">
+                                <span th:replace="~{fragments/money :: money(${row.amount})}">0.00</span>
+                            </th:block>
+                            <th:block th:if="${row.amount == null}">
+                                <span th:replace="~{fragments/money :: money(${row.value})}">0.00</span>
+                            </th:block>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <p th:if="${preview.balanced}" class="preview-foot">
+                    <small>These are the exact amounts that will be stored, rounding included.</small>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!--
+      Out-of-band swap: htmx pulls this out of the response and replaces the
+      real submit button, so the button's enabled state always matches the
+      preview it was computed from.
+    -->
+    <button type="submit" id="submit-expense" form="expense-form" hx-swap-oob="true"
+            th:disabled="${preview == null or !preview.balanced}">Save expense</button>
+
+</th:block>
+
+</body>
+</html>

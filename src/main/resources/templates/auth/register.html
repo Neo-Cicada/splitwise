@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Create an account</title>
+</head>
+<body>
+
+<section layout:fragment="content" class="narrow">
+
+    <hgroup>
+        <h1>Create an account</h1>
+        <p>You will be able to create groups and split expenses.</p>
+    </hgroup>
+
+    <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+
+        <label for="name">Name
+            <input type="text" id="name" th:field="*{name}" th:errorclass="field-error"
+                   autocomplete="name" placeholder="Ana Reyes">
+        </label>
+        <small th:if="${#fields.hasErrors('name')}" class="error-text" th:errors="*{name}">Name error</small>
+
+        <label for="email">Email
+            <input type="email" id="email" th:field="*{email}" th:errorclass="field-error"
+                   autocomplete="username" placeholder="you@example.com">
+        </label>
+        <small th:if="${#fields.hasErrors('email')}" class="error-text" th:errors="*{email}">Email error</small>
+
+        <label for="password">Password
+            <input type="password" id="password" th:field="*{password}"
+                   th:errorclass="field-error" autocomplete="new-password">
+        </label>
+        <small th:if="${#fields.hasErrors('password')}" class="error-text" th:errors="*{password}">Password error</small>
+
+        <label for="confirmPassword">Confirm password
+            <input type="password" id="confirmPassword" th:field="*{confirmPassword}"
+                   th:errorclass="field-error" autocomplete="new-password">
+        </label>
+        <small th:if="${#fields.hasErrors('confirmPassword')}" class="error-text"
+               th:errors="*{confirmPassword}">Confirmation error</small>
+
+        <button type="submit">Create account</button>
+    </form>
+
+    <p><small>Already registered? <a th:href="@{/login}">Sign in</a>.</small></p>
+
+</section>
+
+</body>
+</html>

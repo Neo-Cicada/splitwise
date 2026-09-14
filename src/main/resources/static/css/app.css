@@ -1,0 +1,254 @@
+/*
+ * Project overrides on top of Pico.css.
+ * Pico is classless, so keep additions here small and semantic.
+ */
+
+:root {
+    --splitwise-success-bg: #d7f5e3;
+    --splitwise-success-fg: #10512f;
+    --splitwise-error-bg: #fadcdc;
+    --splitwise-error-fg: #6b1616;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --splitwise-success-bg: #10361f;
+        --splitwise-success-fg: #9be3bb;
+        --splitwise-error-bg: #3d1414;
+        --splitwise-error-fg: #f0a9a9;
+    }
+}
+
+.brand {
+    text-decoration: none;
+}
+
+/* Flash messages, rendered by fragments/alerts.html */
+.alerts:empty {
+    display: none;
+}
+
+.alert {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid currentColor;
+}
+
+.alert-success {
+    background: var(--splitwise-success-bg);
+    color: var(--splitwise-success-fg);
+}
+
+.alert-error {
+    background: var(--splitwise-error-bg);
+    color: var(--splitwise-error-fg);
+}
+
+/* Currency, rendered by fragments/money.html */
+.money {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+footer {
+    padding-block: 2rem;
+    opacity: 0.7;
+}
+
+/* Forms and validation */
+.field-error {
+    --pico-form-element-border-color: var(--splitwise-error-fg);
+    --pico-form-element-active-border-color: var(--splitwise-error-fg);
+}
+
+.error-text {
+    display: block;
+    margin-top: -0.75rem;
+    margin-bottom: 1rem;
+    color: var(--splitwise-error-fg);
+}
+
+/* Groups */
+.empty-state {
+    text-align: center;
+    padding-block: 2rem;
+}
+
+.remove-button {
+    margin-bottom: 0;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+.placeholder {
+    opacity: 0.65;
+    border-style: dashed;
+}
+
+/* Expense feed and form */
+.feed-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.add-expense {
+    margin-bottom: 0;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.numeric {
+    text-align: right;
+}
+
+.split-badge {
+    margin-left: 0.4rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+    background: var(--pico-code-background-color, rgba(128, 128, 128, 0.15));
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+}
+
+.hint {
+    margin-top: -0.5rem;
+}
+
+.participant-value {
+    margin-bottom: 0;
+    max-width: 10rem;
+}
+
+/* Balances */
+.balance-headline {
+    font-size: 1.15rem;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    border-radius: 0.4rem;
+    border-left: 4px solid currentColor;
+}
+
+.balance-headline.is-owed,
+tr.is-owed td:first-child,
+tr.is-owed .money {
+    color: var(--splitwise-success-fg);
+}
+
+.balance-headline.is-owed {
+    background: var(--splitwise-success-bg);
+}
+
+.balance-headline.is-owing,
+tr.is-owing td:first-child,
+tr.is-owing .money {
+    color: var(--splitwise-error-fg);
+}
+
+.balance-headline.is-owing {
+    background: var(--splitwise-error-bg);
+}
+
+.balance-headline.is-settled {
+    background: var(--pico-code-background-color, rgba(128, 128, 128, 0.12));
+    opacity: 0.85;
+}
+
+tr.is-settled td {
+    opacity: 0.6;
+}
+
+/* Auth */
+.narrow {
+    max-width: 26rem;
+}
+
+.logout-form {
+    margin-bottom: 0;
+}
+
+.logout-button {
+    margin-bottom: 0;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+}
+
+.who small {
+    opacity: 0.75;
+}
+
+/* Suggested transfers */
+.suggestions {
+    list-style: none;
+    padding-left: 0;
+}
+
+.suggestions li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--pico-muted-border-color, rgba(128, 128, 128, 0.25));
+}
+
+.suggestions li:last-child {
+    border-bottom: none;
+}
+
+.use-suggestion {
+    margin-bottom: 0;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+/* Live split preview */
+.preview-panel {
+    margin-top: 1.5rem;
+}
+
+.preview-hint {
+    margin-bottom: 0;
+    opacity: 0.75;
+}
+
+.preview-status {
+    font-weight: 600;
+    padding: 0.5rem 0.8rem;
+    border-radius: 0.35rem;
+    border-left: 4px solid currentColor;
+    margin-bottom: 1rem;
+}
+
+.preview-status.is-balanced {
+    background: var(--splitwise-success-bg);
+    color: var(--splitwise-success-fg);
+}
+
+.preview-status.is-unbalanced {
+    background: var(--splitwise-error-bg);
+    color: var(--splitwise-error-fg);
+}
+
+.preview-table {
+    margin-bottom: 0.5rem;
+}
+
+.preview-foot {
+    margin-bottom: 0;
+    opacity: 0.7;
+}
+
+#submit-expense[disabled] {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.htmx-request .split-preview {
+    opacity: 0.6;
+    transition: opacity 120ms ease-in;
+}

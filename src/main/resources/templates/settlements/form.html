@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Settle up</title>
+</head>
+<body>
+
+<section layout:fragment="content">
+
+    <hgroup>
+        <h1>Settle up</h1>
+        <p>in <a th:href="@{/groups/{id}(id=${group.id})}" th:text="${group.name}">Group</a></p>
+    </hgroup>
+
+    <article>
+        <header>Suggested payments</header>
+
+        <p th:if="${#lists.isEmpty(suggestions)}" class="empty-state">
+            <strong>Everyone is settled up.</strong><br>
+            No payments are needed right now.
+        </p>
+
+        <div th:unless="${#lists.isEmpty(suggestions)}">
+            <p><small>
+                These clear every debt in <span th:text="${#lists.size(suggestions)}">0</span>
+                payment(s). Picking one fills in the form below &mdash; nothing is
+                recorded until you submit it.
+            </small></p>
+
+            <ul class="suggestions">
+                <li th:each="transfer : ${suggestions}">
+                    <span class="suggestion-text">
+                        <strong th:text="${transfer.fromName}">Ben</strong> pays
+                        <strong th:text="${transfer.toName}">Ana</strong>
+                        <span th:replace="~{fragments/money :: money(${transfer.amount})}">0.00</span>
+                    </span>
+                    <a class="secondary use-suggestion" role="button"
+                       th:href="@{/groups/{id}/settle(id=${group.id},
+                                 from=${transfer.fromUserId},
+                                 to=${transfer.toUserId},
+                                 amount=${transfer.amount})}">Use this</a>
+                </li>
+            </ul>
+        </div>
+    </article>
+
+    <article>
+        <header>Record a payment</header>
+
+        <form th:action="@{/groups/{id}/settlements(id=${group.id})}"
+              th:object="${form}" method="post" novalidate>
+
+            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error" role="alert">
+                <p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Global error</p>
+            </div>
+
+            <div class="grid">
+                <label for="fromUser">Who paid
+                    <select id="fromUser" th:field="*{fromUser}" th:errorclass="field-error">
+                        <option th:each="member : ${members}"
+                                th:value="${member.user.id}"
+                                th:text="${member.user.name}">Name</option>
+                    </select>
+                </label>
+
+                <label for="toUser">Who was paid
+                    <select id="toUser" th:field="*{toUser}" th:errorclass="field-error">
+                        <option value="">Choose someone</option>
+                        <option th:each="member : ${members}"
+                                th:value="${member.user.id}"
+                                th:text="${member.user.name}">Name</option>
+                    </select>
+                </label>
+
+                <label for="amount">Amount
+                    <input type="number" step="0.01" min="0.01" id="amount"
+                           th:field="*{amount}" th:errorclass="field-error" placeholder="300.00">
+                </label>
+            </div>
+
+            <small th:if="${#fields.hasErrors('fromUser')}" class="error-text" th:errors="*{fromUser}">From error</small>
+            <small th:if="${#fields.hasErrors('toUser')}" class="error-text" th:errors="*{toUser}">To error</small>
+            <small th:if="${#fields.hasErrors('amount')}" class="error-text" th:errors="*{amount}">Amount error</small>
+
+            <p><small>Recording a payment means the money has already changed hands.</small></p>
+
+            <button type="submit">Record payment</button>
+            <a th:href="@{/groups/{id}(id=${group.id})}" role="button" class="secondary outline">Cancel</a>
+        </form>
+    </article>
+
+    <article>
+        <header>Payments so far</header>
+        <p th:if="${#lists.isEmpty(settlements)}" class="empty-state">
+            <strong>No payments recorded yet.</strong>
+        </p>
+        <table th:unless="${#lists.isEmpty(settlements)}">
+            <thead>
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">From</th>
+                <th scope="col">To</th>
+                <th scope="col" class="numeric">Amount</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="settlement : ${settlements}">
+                <td><span th:replace="~{fragments/datetime :: date(${settlement.settledAt})}">1 Jan 2026</span></td>
+                <td th:text="${settlement.fromUser.name}">From</td>
+                <td th:text="${settlement.toUser.name}">To</td>
+                <td class="numeric"><span th:replace="~{fragments/money :: money(${settlement.amount})}">0.00</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </article>
+
+</section>
+
+</body>
+</html>

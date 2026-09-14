@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>New group</title>
+</head>
+<body>
+
+<section layout:fragment="content">
+
+    <hgroup>
+        <h1>New group</h1>
+        <p>You will be added as the group's first admin.</p>
+    </hgroup>
+
+    <form th:action="@{/groups}" th:object="${form}" method="post" novalidate>
+
+        <label for="name">Name
+            <input type="text" id="name" th:field="*{name}"
+                   th:errorclass="field-error"
+                   placeholder="Palawan trip" autofocus>
+        </label>
+        <small th:if="${#fields.hasErrors('name')}" class="error-text" th:errors="*{name}">Name error</small>
+
+        <label for="currency">Currency
+            <select id="currency" th:field="*{currency}" th:errorclass="field-error">
+                <option th:each="code : ${currencies}"
+                        th:value="${code}" th:text="${code}">PHP</option>
+            </select>
+        </label>
+        <small th:if="${#fields.hasErrors('currency')}" class="error-text" th:errors="*{currency}">Currency error</small>
+
+        <button type="submit">Create group</button>
+        <a th:href="@{/groups}" role="button" class="secondary outline">Cancel</a>
+    </form>
+
+</section>
+
+</body>
+</html>

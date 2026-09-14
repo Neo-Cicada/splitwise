@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>New expense</title>
+</head>
+<body>
+
+<section layout:fragment="content">
+
+    <hgroup>
+        <h1>New expense</h1>
+        <p>in <a th:href="@{/groups/{id}(id=${group.id})}" th:text="${group.name}">Group</a></p>
+    </hgroup>
+
+    <!--
+      hx-trigger is "change", not "submit", so htmx handles only the live
+      preview. A real submit still posts normally to th:action, which keeps the
+      form working when the CDN is unreachable.
+    -->
+    <form id="expense-form"
+          th:action="@{/groups/{id}/expenses(id=${group.id})}"
+          th:object="${form}" method="post" novalidate
+          th:attr="hx-post=@{/groups/{id}/expenses/preview(id=${group.id})}"
+          hx-trigger="change"
+          hx-target="#split-preview"
+          hx-swap="outerHTML">
+
+        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error" role="alert">
+            <p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Global error</p>
+        </div>
+
+        <div class="grid">
+            <label for="amount">Amount
+                <input type="number" step="0.01" min="0.01" id="amount"
+                       th:field="*{amount}" th:errorclass="field-error" placeholder="100.00">
+            </label>
+
+            <label for="spentAt">Date
+                <input type="date" id="spentAt" th:field="*{spentAt}" th:errorclass="field-error">
+            </label>
+        </div>
+        <small th:if="${#fields.hasErrors('amount')}" class="error-text" th:errors="*{amount}">Amount error</small>
+        <small th:if="${#fields.hasErrors('spentAt')}" class="error-text" th:errors="*{spentAt}">Date error</small>
+
+        <label for="description">Description
+            <input type="text" id="description" th:field="*{description}"
+                   th:errorclass="field-error" placeholder="Dinner at the beach">
+        </label>
+        <small th:if="${#fields.hasErrors('description')}" class="error-text" th:errors="*{description}">Description error</small>
+
+        <div class="grid">
+            <label for="paidBy">Paid by
+                <select id="paidBy" th:field="*{paidBy}" th:errorclass="field-error">
+                    <option th:each="member : ${members}"
+                            th:value="${member.user.id}"
+                            th:text="${member.user.name}">Name</option>
+                </select>
+            </label>
+
+            <label for="splitType">Split
+                <select id="splitType" th:field="*{splitType}" th:errorclass="field-error">
+                    <option th:each="type : ${splitTypes}"
+                            th:value="${type}" th:text="${type}">EQUAL</option>
+                </select>
+            </label>
+        </div>
+        <small th:if="${#fields.hasErrors('paidBy')}" class="error-text" th:errors="*{paidBy}">Payer error</small>
+        <small th:if="${#fields.hasErrors('splitType')}" class="error-text" th:errors="*{splitType}">Split type error</small>
+
+        <fieldset>
+            <legend>Participants</legend>
+            <p class="hint">
+                <small>
+                    The value column is the exact amount for EXACT and the percentage for
+                    PERCENTAGE. EQUAL ignores it and divides the total evenly.
+                </small>
+            </p>
+
+            <table>
+                <thead>
+                <tr>
+                    <th scope="col">In</th>
+                    <th scope="col">Person</th>
+                    <th scope="col">Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!--
+                  The participant rows are bound by index. The __${i}__ preprocessing
+                  syntax is what makes th:field resolve to participants[0].value and
+                  friends — a plain ${i} would be evaluated too late to build the path.
+                -->
+                <tr th:each="participant, iterStat : *{participants}">
+                    <td>
+                        <input type="hidden" th:field="*{participants[__${iterStat.index}__].userId}">
+                        <input type="checkbox" th:field="*{participants[__${iterStat.index}__].selected}">
+                    </td>
+                    <td th:text="${memberNames.get(participant.userId)}">Name</td>
+                    <td>
+                        <input type="number" step="0.01" min="0"
+                               th:field="*{participants[__${iterStat.index}__].value}"
+                               class="participant-value" placeholder="—">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <small th:if="${#fields.hasErrors('participants')}" class="error-text"
+                   th:errors="*{participants}">Participants error</small>
+        </fieldset>
+
+        <article class="preview-panel">
+            <header>How this splits</header>
+            <!-- Replaced wholesale by the fragment htmx fetches on every change. -->
+            <div id="split-preview" class="split-preview">
+                <p class="preview-hint">
+                    <small>Fill in the amount and pick participants to see how it splits.</small>
+                </p>
+            </div>
+        </article>
+
+        <button type="submit" id="submit-expense">Save expense</button>
+        <a th:href="@{/groups/{id}(id=${group.id})}" role="button" class="secondary outline">Cancel</a>
+    </form>
+
+</section>
+
+</body>
+</html>

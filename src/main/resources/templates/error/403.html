@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Not allowed</title>
+</head>
+<body>
+
+<section layout:fragment="content">
+    <hgroup>
+        <h1>Not allowed</h1>
+        <p th:text="${message} ?: 'You do not have access to this.'">You do not have access to this.</p>
+    </hgroup>
+    <p><a th:href="@{/groups}" role="button">Back to your groups</a></p>
+</section>
+
+</body>
+</html>

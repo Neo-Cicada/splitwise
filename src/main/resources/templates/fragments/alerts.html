@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Flash messages. Controllers set these with:
+      redirectAttributes.addFlashAttribute("success", "...");
+      redirectAttributes.addFlashAttribute("error",   "...");
+  The layout pulls this fragment in above every page's content, so any form
+  in the project gets flash rendering for free.
+-->
+<div th:fragment="alerts" class="alerts">
+    <article th:if="${success}" class="alert alert-success" role="status">
+        <span th:text="${success}">Saved.</span>
+    </article>
+    <article th:if="${error}" class="alert alert-error" role="alert">
+        <span th:text="${error}">Something went wrong.</span>
+    </article>
+</div>
+
+</body>
+</html>

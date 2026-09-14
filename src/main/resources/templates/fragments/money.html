@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Single source of truth for currency display. Use it everywhere money is
+  shown so grouping, decimals and the ₱ sign never drift between pages:
+
+      <span th:replace="~{fragments/money :: money(${expense.amount})}"></span>
+
+  Amounts are BigDecimal (NUMERIC(12,2)) throughout the project.
+-->
+<span th:fragment="money(amount)" class="money"
+      th:text="${amount != null} ? |₱${#numbers.formatDecimal(amount, 1, 'COMMA', 2, 'POINT')}| : '—'">₱0.00</span>
+
+</body>
+</html>

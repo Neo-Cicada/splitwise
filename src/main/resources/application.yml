@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: splitwise
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/splitwise
+    username: splitwise
+    password: splitwise
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # Flyway owns the schema. Hibernate must never create or alter it.
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          # Keep TIMESTAMPTZ round-tripping in UTC regardless of JVM default.
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+
+  thymeleaf:
+    cache: false
+
+logging:
+  level:
+    org.flywaydb: info
