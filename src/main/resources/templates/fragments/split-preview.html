@@ -12,13 +12,13 @@
     <div id="split-preview" class="split-preview">
 
         <p th:if="${preview == null}" class="preview-hint">
-            <small>Fill in the amount and pick participants to see how it splits.</small>
+            Fill in the amount and pick participants to see how it splits.
         </p>
 
         <div th:if="${preview != null}">
 
             <p th:if="${preview.hasProblem()}" class="preview-hint">
-                <small th:text="${preview.problem}">Enter an amount.</small>
+                <span th:text="${preview.problem}">Enter an amount.</span>
             </p>
 
             <div th:unless="${preview.hasProblem()}">
@@ -28,7 +28,7 @@
                     <span th:text="${preview.status}">Fully assigned.</span>
                 </p>
 
-                <table class="preview-table">
+                <table>
                     <thead>
                     <tr>
                         <th scope="col">Person</th>

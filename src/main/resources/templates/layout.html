@@ -9,8 +9,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title layout:title-pattern="$CONTENT_TITLE · $LAYOUT_TITLE">Splitwise</title>
 
-    <!-- Pico.css v2, classless base styling. CDN only: no build step, no npm. -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!--
+      Fraunces for display (its WONK axis gives the headings a printed,
+      slightly irregular feel), Archivo for UI, IBM Plex Mono for every
+      figure — money in a ledger must align digit to digit.
+    -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
     <link rel="stylesheet" th:href="@{/css/app.css}">
 
     <!-- htmx: the server still renders every byte of HTML; htmx only swaps it in. -->
@@ -20,31 +27,32 @@
 </head>
 <body>
 
-<header class="container">
-    <nav>
-        <ul>
-            <li><a th:href="@{/}" class="brand"><strong>₱ Splitwise</strong></a></li>
-        </ul>
-        <ul>
-            <li><a th:href="@{/}">Home</a></li>
-            <li sec:authorize="isAuthenticated()"><a th:href="@{/groups}">Groups</a></li>
+<header class="masthead">
+    <div class="masthead-inner">
+        <a th:href="@{/}" class="wordmark"><span class="peso">₱</span>Splitwise</a>
 
-            <li sec:authorize="isAuthenticated()" class="who">
-                <small>Signed in as <strong sec:authentication="principal.displayName">Name</strong></small>
-            </li>
-            <li sec:authorize="isAuthenticated()">
-                <form th:action="@{/logout}" method="post" class="logout-form">
-                    <button type="submit" class="secondary outline logout-button">Sign out</button>
-                </form>
-            </li>
+        <nav>
+            <ul>
+                <li sec:authorize="isAuthenticated()"><a th:href="@{/groups}">Groups</a></li>
 
-            <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Sign in</a></li>
-            <li sec:authorize="isAnonymous()"><a th:href="@{/register}">Register</a></li>
-        </ul>
-    </nav>
+                <li sec:authorize="isAuthenticated()" class="who">
+                    <small>Signed in as <strong sec:authentication="principal.displayName">Name</strong></small>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-ghost btn-small">Sign out</button>
+                    </form>
+                </li>
+
+                <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Sign in</a></li>
+                <li sec:authorize="isAnonymous()"><a th:href="@{/register}">Register</a></li>
+            </ul>
+        </nav>
+    </div>
 </header>
+<div class="rule-double"></div>
 
-<main class="container">
+<main>
     <!-- Flash messages render above every page's content. -->
     <div th:replace="~{fragments/alerts :: alerts}"></div>
 
@@ -53,10 +61,10 @@
     </section>
 </main>
 
-<footer class="container">
-    <small>Splitwise &middot; <span th:text="${T(java.time.Year).now()}">2026</span></small>
+<footer class="colophon">
+    <span>Splitwise &middot; a shared ledger</span>
+    <span>Balances derived, never stored</span>
 </footer>
-
 
 <!--
   CSRF stays on for htmx requests. Spring Security expects the token in a

@@ -10,34 +10,32 @@
 
 <section layout:fragment="content">
 
-    <hgroup>
+    <div class="page-head reveal">
+        <p class="eyebrow">Your books</p>
         <h1>Groups</h1>
-        <p>Every group you are currently a member of.</p>
-    </hgroup>
+        <p>Every group you currently keep a ledger with.</p>
+    </div>
 
-    <p><a th:href="@{/groups/new}" role="button">New group</a></p>
+    <section class="panel reveal">
+        <div class="panel-head">
+            <h2 th:text="${#lists.size(groups)} + ' open'">0 open</h2>
+            <a th:href="@{/groups/new}" role="button" class="btn-small">New group</a>
+        </div>
 
-    <article th:if="${#lists.isEmpty(groups)}" class="empty-state">
-        <p><strong>No groups yet.</strong></p>
-        <p>Create one to start tracking shared expenses.</p>
-    </article>
+        <div th:if="${#lists.isEmpty(groups)}" class="empty">
+            <strong>No groups yet</strong>
+            Start one to begin tracking shared expenses.
+        </div>
 
-    <table th:unless="${#lists.isEmpty(groups)}">
-        <thead>
-        <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Currency</th>
-            <th scope="col">Created</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="group : ${groups}">
-            <td><a th:href="@{/groups/{id}(id=${group.id})}" th:text="${group.name}">Trip</a></td>
-            <td th:text="${group.currency}">PHP</td>
-            <td><span th:replace="~{fragments/datetime :: date(${group.createdAt})}">1 Jan 2026</span></td>
-        </tr>
-        </tbody>
-    </table>
+        <ul th:unless="${#lists.isEmpty(groups)}" class="ledger">
+            <li th:each="group : ${groups}">
+                <a class="who-name" th:href="@{/groups/{id}(id=${group.id})}" th:text="${group.name}">Trip</a>
+                <span class="stamp" th:text="${group.currency}">PHP</span>
+                <span class="leader"></span>
+                <span th:replace="~{fragments/datetime :: date(${group.createdAt})}">1 Jan 2026</span>
+            </li>
+        </ul>
+    </section>
 
 </section>
 

@@ -8,12 +8,15 @@
 </head>
 <body>
 
-<section layout:fragment="content">
-    <hgroup>
+<section layout:fragment="content" class="narrow">
+    <div class="page-head reveal">
+        <p class="eyebrow">403</p>
         <h1>Not allowed</h1>
         <p th:text="${message} ?: 'You do not have access to this.'">You do not have access to this.</p>
-    </hgroup>
-    <p><a th:href="@{/groups}" role="button">Back to your groups</a></p>
+    </div>
+    <div class="actions">
+        <a th:href="@{/groups}" role="button">Back to your groups</a>
+    </div>
 </section>
 
 </body>

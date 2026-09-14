@@ -10,10 +10,12 @@
 
 <section layout:fragment="content">
 
-    <hgroup>
+    <div class="page-head reveal">
+        <p class="eyebrow">
+            <a th:href="@{/groups/{id}(id=${group.id})}" th:text="${group.name}">Group</a>
+        </p>
         <h1>New expense</h1>
-        <p>in <a th:href="@{/groups/{id}(id=${group.id})}" th:text="${group.name}">Group</a></p>
-    </hgroup>
+    </div>
 
     <!--
       hx-trigger is "change", not "submit", so htmx handles only the live
@@ -22,7 +24,7 @@
     -->
     <form id="expense-form"
           th:action="@{/groups/{id}/expenses(id=${group.id})}"
-          th:object="${form}" method="post" novalidate
+          th:object="${form}" method="post" novalidate class="reveal"
           th:attr="hx-post=@{/groups/{id}/expenses/preview(id=${group.id})}"
           hx-trigger="change"
           hx-target="#split-preview"
@@ -32,7 +34,7 @@
             <p th:each="err : ${#fields.globalErrors()}" th:text="${err}">Global error</p>
         </div>
 
-        <div class="grid">
+        <div class="field-row two">
             <label for="amount">Amount
                 <input type="number" step="0.01" min="0.01" id="amount"
                        th:field="*{amount}" th:errorclass="field-error" placeholder="100.00">
@@ -51,7 +53,7 @@
         </label>
         <small th:if="${#fields.hasErrors('description')}" class="error-text" th:errors="*{description}">Description error</small>
 
-        <div class="grid">
+        <div class="field-row two">
             <label for="paidBy">Paid by
                 <select id="paidBy" th:field="*{paidBy}" th:errorclass="field-error">
                     <option th:each="member : ${members}"
@@ -79,51 +81,57 @@
                 </small>
             </p>
 
-            <table>
-                <thead>
-                <tr>
-                    <th scope="col">In</th>
-                    <th scope="col">Person</th>
-                    <th scope="col">Value</th>
-                </tr>
-                </thead>
-                <tbody>
-                <!--
-                  The participant rows are bound by index. The __${i}__ preprocessing
-                  syntax is what makes th:field resolve to participants[0].value and
-                  friends — a plain ${i} would be evaluated too late to build the path.
-                -->
-                <tr th:each="participant, iterStat : *{participants}">
-                    <td>
-                        <input type="hidden" th:field="*{participants[__${iterStat.index}__].userId}">
-                        <input type="checkbox" th:field="*{participants[__${iterStat.index}__].selected}">
-                    </td>
-                    <td th:text="${memberNames.get(participant.userId)}">Name</td>
-                    <td>
-                        <input type="number" step="0.01" min="0"
-                               th:field="*{participants[__${iterStat.index}__].value}"
-                               class="participant-value" placeholder="—">
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                    <tr>
+                        <th scope="col">In</th>
+                        <th scope="col">Person</th>
+                        <th scope="col" class="numeric">Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!--
+                      The participant rows are bound by index. The __${i}__ preprocessing
+                      syntax is what makes th:field resolve to participants[0].value and
+                      friends — a plain ${i} would be evaluated too late to build the path.
+                    -->
+                    <tr th:each="participant, iterStat : *{participants}">
+                        <td>
+                            <input type="hidden" th:field="*{participants[__${iterStat.index}__].userId}">
+                            <input type="checkbox" th:field="*{participants[__${iterStat.index}__].selected}">
+                        </td>
+                        <td th:text="${memberNames.get(participant.userId)}">Name</td>
+                        <td class="numeric">
+                            <input type="number" step="0.01" min="0"
+                                   th:field="*{participants[__${iterStat.index}__].value}"
+                                   class="participant-value" placeholder="—">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <small th:if="${#fields.hasErrors('participants')}" class="error-text"
                    th:errors="*{participants}">Participants error</small>
         </fieldset>
 
-        <article class="preview-panel">
-            <header>How this splits</header>
+        <section class="preview-panel">
+            <div class="panel-head">
+                <h2>How this splits</h2>
+            </div>
             <!-- Replaced wholesale by the fragment htmx fetches on every change. -->
             <div id="split-preview" class="split-preview">
                 <p class="preview-hint">
-                    <small>Fill in the amount and pick participants to see how it splits.</small>
+                    Fill in the amount and pick participants to see how it splits.
                 </p>
             </div>
-        </article>
+        </section>
 
-        <button type="submit" id="submit-expense">Save expense</button>
-        <a th:href="@{/groups/{id}(id=${group.id})}" role="button" class="secondary outline">Cancel</a>
+        <div class="actions">
+            <button type="submit" id="submit-expense">Save expense</button>
+            <a th:href="@{/groups/{id}(id=${group.id})}" role="button" class="btn-ghost">Cancel</a>
+        </div>
     </form>
 
 </section>

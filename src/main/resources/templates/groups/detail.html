@@ -10,153 +10,145 @@
 
 <section layout:fragment="content">
 
-    <hgroup>
-        <h1 th:text="${group.name}">Group</h1>
-        <p>
+    <div class="page-head reveal">
+        <p class="eyebrow">
             <span th:text="${group.currency}">PHP</span> &middot;
-            created by <span th:text="${group.createdBy.name}">Someone</span>
-            on <span th:replace="~{fragments/datetime :: date(${group.createdAt})}">1 Jan 2026</span>
+            opened by <span th:text="${group.createdBy.name}">Someone</span>
+            <span th:replace="~{fragments/datetime :: date(${group.createdAt})}">1 Jan 2026</span>
         </p>
-    </hgroup>
+        <h1 th:text="${group.name}">Group</h1>
+    </div>
 
-    <article>
-        <header>Members</header>
+    <div class="split-cols">
 
-        <table>
-            <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">Role</th>
-                <th scope="col">Joined</th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="member : ${members}">
-                <td th:text="${member.user.name}">Name</td>
-                <td th:text="${member.user.email}">email</td>
-                <td><small th:text="${member.role}">MEMBER</small></td>
-                <td><span th:replace="~{fragments/datetime :: date(${member.joinedAt})}">1 Jan 2026</span></td>
-                <td>
-                    <form th:action="@{/groups/{gid}/members/{uid}/remove(gid=${group.id},uid=${member.user.id})}"
-                          method="post">
-                        <button type="submit" class="secondary outline remove-button">Remove</button>
+        <!-- ================= Expenses ================= -->
+        <div>
+            <section class="panel reveal">
+                <div class="panel-head">
+                    <h2>Expenses</h2>
+                    <a th:href="@{/groups/{id}/expenses/new(id=${group.id})}"
+                       role="button" class="btn-small">Add expense</a>
+                </div>
+
+                <div th:if="${#lists.isEmpty(expenses)}" class="empty">
+                    <strong>Nothing recorded yet</strong>
+                    Add the first expense to start the ledger.
+                </div>
+
+                <div th:unless="${#lists.isEmpty(expenses)}" class="table-scroll">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Item</th>
+                            <th scope="col">Paid by</th>
+                            <th scope="col" class="numeric">Total</th>
+                            <th scope="col" class="numeric">Your share</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="expense : ${expenses}">
+                            <td><span th:replace="~{fragments/datetime :: day(${expense.spentAt})}">1 Jan</span></td>
+                            <td>
+                                <span th:text="${expense.description} ?: 'Expense'">Dinner</span>
+                                <span class="stamp" th:text="${expense.splitType}">EQUAL</span>
+                            </td>
+                            <td th:text="${expense.paidBy.name}">Name</td>
+                            <td class="numeric"><span th:replace="~{fragments/money :: money(${expense.amount})}">0.00</span></td>
+                            <td class="numeric"><span th:replace="~{fragments/money :: money(${myShares.get(expense.id)})}">0.00</span></td>
+                            <td class="numeric">
+                                <!--
+                                  Rendered only when AccessGuard says this user could
+                                  actually delete it, so the button and the enforcement
+                                  come from the same rule.
+                                -->
+                                <form th:if="${deletableExpenses.contains(expense.id)}"
+                                      th:action="@{/expenses/{id}/delete(id=${expense.id})}" method="post">
+                                    <button type="submit" class="btn btn-ghost btn-small">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ================= Members ================= -->
+            <section class="panel reveal">
+                <div class="panel-head">
+                    <h2>Members</h2>
+                </div>
+
+                <ul class="ledger">
+                    <li th:each="member : ${members}">
+                        <span class="who-name" th:text="${member.user.name}">Name</span>
+                        <span class="stamp" th:text="${member.role}">MEMBER</span>
+                        <span class="leader"></span>
+                        <span class="position" th:text="${member.user.email}">email</span>
+                        <form th:action="@{/groups/{gid}/members/{uid}/remove(gid=${group.id},uid=${member.user.id})}"
+                              method="post">
+                            <button type="submit" class="btn btn-ghost btn-small">Remove</button>
+                        </form>
+                    </li>
+                </ul>
+
+                <div class="panel-foot">
+                    <form th:action="@{/groups/{id}/members(id=${group.id})}"
+                          th:object="${memberForm}" method="post" novalidate class="field-row two"
+                          style="flex:1 1 20rem">
+                        <label for="email">Add someone by email
+                            <input type="email" id="email" th:field="*{email}"
+                                   th:errorclass="field-error" placeholder="name@example.com">
+                        </label>
+                        <div style="align-self:end;margin-bottom:1.1rem">
+                            <button type="submit" class="btn-small">Add member</button>
+                        </div>
+                        <small th:if="${#fields.hasErrors('email')}" class="error-text" th:errors="*{email}">Email error</small>
                     </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                </div>
+            </section>
+        </div>
 
-        <footer>
-            <form th:action="@{/groups/{id}/members(id=${group.id})}"
-                  th:object="${memberForm}" method="post" novalidate>
-                <label for="email">Add a member by email
-                    <input type="email" id="email" th:field="*{email}"
-                           th:errorclass="field-error" placeholder="name@example.com">
-                </label>
-                <small th:if="${#fields.hasErrors('email')}" class="error-text" th:errors="*{email}">Email error</small>
-                <button type="submit">Add member</button>
-            </form>
-        </footer>
-    </article>
+        <!-- ================= Balances ================= -->
+        <aside>
+            <section class="panel reveal">
+                <div class="panel-head">
+                    <h2>Where you stand</h2>
+                </div>
 
-    <article>
-        <header class="feed-header">
-            <span>Expenses</span>
-            <a th:href="@{/groups/{id}/expenses/new(id=${group.id})}" role="button" class="add-expense">Add expense</a>
-        </header>
+                <div class="headline"
+                     th:classappend="${myBalance.owed} ? 'is-owed' : (${myBalance.owing} ? 'is-owing' : 'is-settled')">
+                    <span class="label" th:if="${myBalance.owed}">You are owed</span>
+                    <span class="label" th:if="${myBalance.owing}">You owe</span>
+                    <span class="label" th:if="${myBalance.settled}">Your position</span>
 
-        <p th:if="${#lists.isEmpty(expenses)}" class="empty-state">
-            <strong>No expenses yet.</strong><br>
-            Add the first one to start tracking who owes what.
-        </p>
+                    <span class="figure" th:if="${!myBalance.settled}"
+                          th:replace="~{fragments/money :: money(${myBalance.absolute})}">0.00</span>
+                    <span class="figure" th:if="${myBalance.settled}">Settled up</span>
+                </div>
 
-        <table th:unless="${#lists.isEmpty(expenses)}">
-            <thead>
-            <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Description</th>
-                <th scope="col">Paid by</th>
-                <th scope="col" class="numeric">Total</th>
-                <th scope="col" class="numeric">Your share</th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="expense : ${expenses}">
-                <td><span th:replace="~{fragments/datetime :: day(${expense.spentAt})}">1 Jan 2026</span></td>
-                <td>
-                    <span th:text="${expense.description} ?: 'Expense'">Dinner</span>
-                    <small class="split-badge" th:text="${expense.splitType}">EQUAL</small>
-                </td>
-                <td th:text="${expense.paidBy.name}">Name</td>
-                <td class="numeric"><span th:replace="~{fragments/money :: money(${expense.amount})}">0.00</span></td>
-                <td class="numeric"><span th:replace="~{fragments/money :: money(${myShares.get(expense.id)})}">0.00</span></td>
-                <td>
-                    <!--
-                      Rendered only when AccessGuard says this user could
-                      actually delete it, so the button and the enforcement
-                      come from the same rule.
-                    -->
-                    <form th:if="${deletableExpenses.contains(expense.id)}"
-                          th:action="@{/expenses/{id}/delete(id=${expense.id})}" method="post">
-                        <button type="submit" class="secondary outline remove-button">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </article>
+                <ul class="ledger">
+                    <li th:each="balance : ${balances}"
+                        th:with="net=${balance.netBalance}"
+                        th:classappend="${net.signum() > 0} ? 'is-owed' : (${net.signum() < 0} ? 'is-owing' : 'is-settled')">
+                        <span class="who-name" th:text="${balance.name}">Name</span>
+                        <span class="leader"></span>
+                        <span class="position" th:if="${net.signum() > 0}">is owed</span>
+                        <span class="position" th:if="${net.signum() < 0}">owes</span>
+                        <span class="position" th:if="${net.signum() == 0}">clear</span>
+                        <span th:replace="~{fragments/money :: money(${net.abs()})}">0.00</span>
+                    </li>
+                </ul>
 
-    <article>
-        <header>Balances</header>
+                <div class="panel-foot">
+                    <small>Derived on every load. Always sums to zero.</small>
+                    <a th:href="@{/groups/{id}/settle(id=${group.id})}" role="button" class="btn-small">Settle up</a>
+                </div>
+            </section>
+        </aside>
 
-        <p class="balance-headline" th:classappend="${myBalance.owed} ? 'is-owed' : (${myBalance.owing} ? 'is-owing' : 'is-settled')">
-            <span th:if="${myBalance.owed}">
-                You are owed
-                <span th:replace="~{fragments/money :: money(${myBalance.absolute})}">0.00</span>
-            </span>
-            <span th:if="${myBalance.owing}">
-                You owe
-                <span th:replace="~{fragments/money :: money(${myBalance.absolute})}">0.00</span>
-            </span>
-            <span th:if="${myBalance.settled}">You&rsquo;re settled up</span>
-        </p>
-
-        <table>
-            <thead>
-            <tr>
-                <th scope="col">Member</th>
-                <th scope="col" class="numeric">Net</th>
-                <th scope="col">Position</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="balance : ${balances}"
-                th:with="net=${balance.netBalance}"
-                th:classappend="${net.signum() > 0} ? 'is-owed' : (${net.signum() < 0} ? 'is-owing' : 'is-settled')">
-                <td th:text="${balance.name}">Name</td>
-                <td class="numeric">
-                    <span th:replace="~{fragments/money :: money(${net.abs()})}">0.00</span>
-                </td>
-                <td>
-                    <small th:if="${net.signum() > 0}">is owed</small>
-                    <small th:if="${net.signum() < 0}">owes</small>
-                    <small th:if="${net.signum() == 0}">settled up</small>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-
-        <footer class="feed-header">
-            <small>
-                Balances are derived from expenses and settlements on every page load,
-                never stored. They always sum to zero.
-            </small>
-            <a th:href="@{/groups/{id}/settle(id=${group.id})}" role="button" class="add-expense">Settle up</a>
-        </footer>
-    </article>
+    </div>
 
 </section>
 

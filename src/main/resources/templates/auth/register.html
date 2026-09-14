@@ -10,12 +10,13 @@
 
 <section layout:fragment="content" class="narrow">
 
-    <hgroup>
+    <div class="page-head reveal">
+        <p class="eyebrow">Splitwise</p>
         <h1>Create an account</h1>
-        <p>You will be able to create groups and split expenses.</p>
-    </hgroup>
+        <p>Then open a group and start splitting.</p>
+    </div>
 
-    <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+    <form th:action="@{/register}" th:object="${form}" method="post" novalidate class="reveal">
 
         <label for="name">Name
             <input type="text" id="name" th:field="*{name}" th:errorclass="field-error"
@@ -42,10 +43,12 @@
         <small th:if="${#fields.hasErrors('confirmPassword')}" class="error-text"
                th:errors="*{confirmPassword}">Confirmation error</small>
 
-        <button type="submit">Create account</button>
+        <div class="actions">
+            <button type="submit">Create account</button>
+        </div>
     </form>
 
-    <p><small>Already registered? <a th:href="@{/login}">Sign in</a>.</small></p>
+    <p style="margin-top:2rem"><small>Already registered? <a th:href="@{/login}">Sign in</a>.</small></p>
 
 </section>
 

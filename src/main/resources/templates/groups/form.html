@@ -8,19 +8,19 @@
 </head>
 <body>
 
-<section layout:fragment="content">
+<section layout:fragment="content" class="narrow">
 
-    <hgroup>
+    <div class="page-head reveal">
+        <p class="eyebrow">Open a book</p>
         <h1>New group</h1>
-        <p>You will be added as the group's first admin.</p>
-    </hgroup>
+        <p>You become its first admin.</p>
+    </div>
 
-    <form th:action="@{/groups}" th:object="${form}" method="post" novalidate>
+    <form th:action="@{/groups}" th:object="${form}" method="post" novalidate class="reveal">
 
         <label for="name">Name
             <input type="text" id="name" th:field="*{name}"
-                   th:errorclass="field-error"
-                   placeholder="Palawan trip" autofocus>
+                   th:errorclass="field-error" placeholder="Palawan trip" autofocus>
         </label>
         <small th:if="${#fields.hasErrors('name')}" class="error-text" th:errors="*{name}">Name error</small>
 
@@ -32,8 +32,10 @@
         </label>
         <small th:if="${#fields.hasErrors('currency')}" class="error-text" th:errors="*{currency}">Currency error</small>
 
-        <button type="submit">Create group</button>
-        <a th:href="@{/groups}" role="button" class="secondary outline">Cancel</a>
+        <div class="actions">
+            <button type="submit">Create group</button>
+            <a th:href="@{/groups}" role="button" class="btn-ghost">Cancel</a>
+        </div>
     </form>
 
 </section>

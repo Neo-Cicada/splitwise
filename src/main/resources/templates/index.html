@@ -10,30 +10,45 @@
 
 <section layout:fragment="content">
 
-    <hgroup>
-        <h1 th:text="${greeting}">Welcome</h1>
-        <p>View layer only for now — groups, expenses and settlements come next.</p>
-    </hgroup>
+    <div class="page-head reveal">
+        <p class="eyebrow" th:text="${greeting}">Splitwise is running</p>
+        <h1>A shared ledger for people who eat together.</h1>
+        <p>Log what everyone paid, split it however it actually landed, and let the
+            balances work themselves out. Nothing is stored that can be derived.</p>
+    </div>
 
-    <article>
-        <header>Money fragment</header>
-        <p>
-            A sample amount rendered through the shared fragment:
-            <span th:replace="~{fragments/money :: money(${sampleAmount})}">₱0.00</span>
-        </p>
-        <p>
-            A null amount falls back to a dash:
-            <span th:replace="~{fragments/money :: money(${null})}">—</span>
-        </p>
-    </article>
+    <div class="split-cols reveal">
+        <section class="panel">
+            <div class="panel-head"><h2>Sample entry</h2></div>
+            <ul class="ledger">
+                <li class="is-owed">
+                    <span class="who-name">Ana Reyes</span>
+                    <span class="leader"></span>
+                    <span class="position">is owed</span>
+                    <span th:replace="~{fragments/money :: money(${sampleAmount})}">0.00</span>
+                </li>
+                <li class="is-settled">
+                    <span class="who-name">Unassigned</span>
+                    <span class="leader"></span>
+                    <span class="position">clear</span>
+                    <span th:replace="~{fragments/money :: money(${null})}">—</span>
+                </li>
+            </ul>
+            <div class="panel-foot">
+                <small>Every figure is tabular, to the centavo.</small>
+            </div>
+        </section>
 
-    <article>
-        <header>Flash messages</header>
-        <p>Posting this form redirects back here with a flash attribute set.</p>
-        <form th:action="@{/demo/flash}" method="post">
-            <button type="submit">Trigger a success message</button>
-        </form>
-    </article>
+        <aside>
+            <section class="panel">
+                <div class="panel-head"><h2>Start</h2></div>
+                <p><small>Sign in to see your groups, or open a new book.</small></p>
+                <div class="actions">
+                    <a th:href="@{/groups}" role="button">Your groups</a>
+                </div>
+            </section>
+        </aside>
+    </div>
 
 </section>
 
